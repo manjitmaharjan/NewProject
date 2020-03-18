@@ -1,0 +1,52 @@
+- name: Stop nginx server
+  service:
+    name: nginx
+    state: stopped
+  become: true
+ 
+- name: Remove existing directory
+  shell: /bin/rm -rf /var/www/html/home/*
+  become: true
+ 
+- name: Home directory should exist
+  file:
+    path: /var/www/html/home
+    state: directory
+    mode: 0755
+  become: true
+ 
+- name: Copy latest files
+  copy:
+    src: ../files/index.html
+    dest: /var/www/html/home/
+    directory_mode: yes
+  become: true
+ 
+- name: Copy static nginx file
+  copy:
+    src: ../templates/{{server_hostname}}
+    dest: /etc/nginx/sites-available/
+  become: true
+ 
+- name: Create link file
+  file:
+    src: /etc/nginx/sites-available/{{server_hostname}}
+    dest: /etc/nginx/sites-enabled/{{server_hostname}}
+    owner: root
+    group: root
+    force: yes
+    state: link
+  become: true
+ 
+- name: Start nginx
+  service:
+   name: nginx
+   state: started
+  become: true
+
+
+- name: Start supervisor
+  service:
+   name: supervisor
+   state: started
+  become: true

@@ -1,0 +1,11 @@
+---
+- name: New Ansible Playbook
+  hosts: webserver
+  vars_files:
+    - group_vars/all
+  
+
+  roles:
+    - nginx
+    - static
+ 
